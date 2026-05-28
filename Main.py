@@ -1,5 +1,5 @@
 from kivy.config import Config
-
+#oi
 Config.set("graphics", "width", "360")
 Config.set("graphics", "height", "740")
 Config.set("graphics", "resizable", False)
