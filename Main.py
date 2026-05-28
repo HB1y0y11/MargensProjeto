@@ -32,6 +32,9 @@ firebase_admin.initialize_app(cred, {
 class Gerenciador(ScreenManager):
     pass
 
+class Ideias(Screen):
+    pass
+
 class Historico(Screen):
 
     modo = StringProperty("diario")

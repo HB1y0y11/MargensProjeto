@@ -1,5 +1,6 @@
 <Gerenciador>:
     Home:
+    Ideias
     Historico:
     Aparelhos:
     Geladeira:
@@ -361,6 +362,9 @@
                 MDIconButton:
                     icon: "lightbulb-outline"
                     pos_hint: {"center_y": .5}
+                    on_release:
+                        root.manager.transition.direction = "right"
+                        root.manager.current = "ideias"
 
                 MDIconButton:
                     icon: "account"
@@ -1570,4 +1574,18 @@
 
         on_release:
             app.root.current = "aparelhos"
+            app.root.transition.direction = "right"
+            
+<Ideias>:
+    name: "ideias"
+
+    MDLabel:
+        text: "Tela Ideias"
+        halign: "center"
+
+    MDIconButton:
+        icon: "arrow-left"
+
+        on_release:
+            app.root.current = "home"
             app.root.transition.direction = "right"
