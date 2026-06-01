@@ -1,5 +1,5 @@
 from kivy.config import Config
-#oi
+
 Config.set("graphics", "width", "360")
 Config.set("graphics", "height", "740")
 Config.set("graphics", "resizable", False)
@@ -23,7 +23,12 @@ MESES = [
 
 ESCALA_GRAFICO = 160 / 300
 
-cred = credentials.Certificate("firebase_key.json")
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+firebase_path = os.path.join(BASE_DIR, "firebase_key.json")
+
+cred = credentials.Certificate(firebase_path)
 
 firebase_admin.initialize_app(cred, {
     "databaseURL": "https://margens-13760-default-rtdb.firebaseio.com/"
