@@ -1,376 +1,455 @@
+TelaPrincipal:
+
+<TelaPrincipal>:
+    orientation: "vertical"
+    spacing: 0
+    padding: 0
+
+    Gerenciador:
+        id: screen_manager
+        size_hint_y: 1
+
+    # ============================================================
+    # MENU INFERIOR GLOBAL (Travado com tamanho fixo perfeito)
+    # ============================================================
+    MDBoxLayout:
+        size_hint_y: None
+        height: dp(65)
+        spacing: dp(45)
+        padding: [dp(20), 0]
+        md_bg_color: 0.97, 0.97, 0.97, 1
+
+        Widget:
+
+        MDIconButton:
+            icon: "Images/homepress.png" if screen_manager.current == "home" else "Images/home.png"
+            border: 0, 0, 0, 0
+            theme_icon_color: "Custom"
+            icon_size: dp(40)
+            pos_hint: {"center_y": .5}
+            on_release:
+                screen_manager.transition.direction = "right"
+                screen_manager.current = "home"
+
+        MDIconButton:
+            icon: "lightbulb" if screen_manager.current == "ideias" else "lightbulb-outline"
+            theme_icon_color: "Custom"
+            icon_color: (0.1, 0.5, 0.2, 1) if screen_manager.current == "ideias" else (0.6, 0.6, 0.6, 1)
+            pos_hint: {"center_y": .5}
+            on_release:
+                screen_manager.transition.direction = "left" if screen_manager.current == "home" else "right"
+                screen_manager.current = "ideias"
+
+        MDIconButton:
+            icon: "account" if screen_manager.current == "historico" else "account-outline"
+            theme_icon_color: "Custom"
+            icon_color: (0.1, 0.5, 0.2, 1) if screen_manager.current == "historico" else (0.6, 0.6, 0.6, 1)
+            pos_hint: {"center_y": .5}
+            on_release:
+                screen_manager.transition.direction = "left"
+                screen_manager.current = "historico"
+
+        Widget:
+
 <Gerenciador>:
     Home:
-    Ideias
+    Ideias:
     Historico:
     Aparelhos:
     Geladeira:
     Ventilador:
 
+# ============================================================
+# TELA HOME (Alinhada perfeitamente ao topo, sem vãos)
+# ============================================================
 <Home>:
     name: "home"
 
-    MDBoxLayout:
+    BoxLayout:
         orientation: "vertical"
-        spacing: 8
-
+        spacing: 0
+        padding: 0
         canvas.before:
             Color:
-                rgba: 1,1,1,1
+                rgba: 1, 1, 1, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
 
+        # SEÇÃO 1: CABEÇALHO IMAGEM DO TOPO
         MDFloatLayout:
             size_hint_y: None
-            height: 200
+            height: dp(140)
 
             Image:
                 source: "images/fundo_grande.png"
-                allow_stretch: False
-                keep_ratio: True
-                size_hint: None, None
-                size: self.texture_size
-                x: 0
-                top: self.parent.top
-
-            MDLabel:
-                text: "Olá, Ana!"
-                font_size: 20
-                bold: True
-                color: 0, 0, 0, 1
-                size_hint: None, None
-                pos_hint: {"x": 0.08, "y": 0.3}
-
-            Button:
-                background_normal: "images/bell.png"
-                background_down: "images/bellpress.png"
-                size_hint: None, None
-                size: 20, 20
-                border: 0,0,0,0
-                pos_hint: {"right": 0.95, "top": 0.85}
-
-        BoxLayout:
-            orientation: "vertical"
-            height: 160
-            size_hint_y: None
-            padding: 15
-
-            Label:
-                text: "Consumo"
-                font_size: 18
-                color: 0.2, 0.05, 0.18, 1
-                pos_hint: {"x": -0.36, "top": 0}
+                allow_stretch: True
+                keep_ratio: False
+                size_hint: 1, 1
+                pos_hint: {"center_x": .5, "center_y": .5}
 
             BoxLayout:
-                spacing: 15
-                pos_hint: {"x": 0.04, "top": 0}
+                orientation: "horizontal"
+                size_hint: 1, None
+                height: dp(50)
+                pos_hint: {"x": 0, "top": 0.85}
+                padding: [dp(22), 0, dp(22), 0]
+
+                MDLabel:
+                    text: "Olá, Ana!"
+                    font_size: dp(20)
+                    bold: True
+                    color: 0, 0, 0, 1
+                    valign: "middle"
 
                 Button:
+                    background_normal: "images/bell.png"
+                    background_down: "images/bellpress.png"
                     size_hint: None, None
-                    size: 75, 75
-                    background_normal: "images/aparelhos.png"
-                    background_down: "images/aparelhospress.png"
-                    border: 0,0,0,0
-                    on_release:
-                        app.root.current = "aparelhos"
-                        app.root.transition.direction = "left"
+                    size: dp(20), dp(20)
+                    border: 0, 0, 0, 0
+                    pos_hint: {"center_y": .5}
 
-                Button:
-                    size_hint: None, None
-                    size: 75, 75
-                    background_normal: "images/historico.png"
-                    background_down: "images/historicopress.png"
-                    border: 0,0,0,0
-                    on_release:
-                        app.root.current = "historico"
-                        app.root.transition.direction = "left"
-
+        # SEÇÃO 2: CONSUMO
         MDBoxLayout:
             orientation: "vertical"
             size_hint_y: None
-            padding: [8, 18, 8, 8]
-            spacing: 14
-            height: 360
+            height: dp(130)
+            padding: [dp(22), dp(15), dp(22), dp(5)]
+            spacing: dp(20)
+
+            MDLabel:
+                text: "Consumo"
+                font_size: dp(18)
+                bold: True
+                color: 0.2, 0.05, 0.18, 1
+                size_hint_y: None
+                height: self.texture_size[1]
+
+            MDBoxLayout:
+                orientation: "horizontal"
+                spacing: dp(20)
+                size_hint_y: None
+                height: dp(75)
+
+                Button:
+                    size_hint: None, None
+                    size: dp(85), dp(85)
+                    background_normal: "images/aparelhos.png"
+                    background_down: "images/aparelhospress.png"
+                    border: 0, 0, 0, 0
+                    on_release:
+                        app.root.ids.screen_manager.current = "aparelhos"
+                        app.root.ids.screen_manager.transition.direction = "left"
+
+                Button:
+                    size_hint: None, None
+                    size: dp(85), dp(85)
+                    background_normal: "images/historico.png"
+                    background_down: "images/historicopress.png"
+                    border: 0, 0, 0, 0
+                    on_release:
+                        app.root.ids.screen_manager.current = "historico"
+                        app.root.ids.screen_manager.transition.direction = "left"
+                
+                Button:
+                    size_hint: None, None
+                    size: dp(85), dp(85)
+                    background_normal: "images/comunidade.png"
+                    background_down: "images/comunidade.png"
+                    border: 0, 0, 0, 0
+                    on_release:
+                        app.root.ids.screen_manager.current = "historico"
+                        app.root.ids.screen_manager.transition.direction = "left"
+
+        # SEÇÃO 3: HOJE (GRÁFICOS)
+        MDBoxLayout:
+            orientation: "vertical"
+            size_hint_y: None
+            height: dp(230)
+            padding: [dp(22), dp(10), dp(22), dp(5)]
+            spacing: dp(10)
 
             MDLabel:
                 size_hint_y: None
                 text: "Hoje"
                 height: self.texture_size[1]
-                padding_x: 18
                 color: 0.2, 0.05, 0.18, 1
-                font_size: 18
+                font_size: dp(18)
+                bold: True
 
             MDFloatLayout:
                 size_hint_y: None
-                height: 180
+                height: dp(180)
 
                 MDCard:
                     orientation: "horizontal"
-                    size_hint: .9, None
-                    height: 170
+                    size_hint: 1, None
+                    height: dp(170)
                     pos_hint: {"center_x": .5, "top": 1}
+                    radius: [dp(20)]
+                    padding: dp(15)
+                    spacing: dp(15)
+                    md_bg_color: 0.97, 0.97, 0.97, 1
 
-                    radius: [20]
-                    padding: 15
-                    spacing: 15
-
-                    md_bg_color: 0.97,0.97,0.97,1
-
-                    canvas.before:
-                        Color:
-                            rgba: 0, 0, 0, 0.1
-
-                        RoundedRectangle:
-                            pos: self.x, self.y - 8
-                            size: self.width, self.height
-                            radius: [20]
-
+                    # Lado Esquerdo: Gauge
                     MDBoxLayout:
                         orientation: "vertical"
-                        size_hint_x: 0.35
+                        size_hint_x: 0.4
 
                         MDLabel:
                             text: root.nivel
-
                             halign: "center"
                             adaptive_height: True
-
-                            color:
-                                (0.3,0.8,0.5,1) if root.nivel == "Baixo" else (1,0.7,0.2,1) if root.nivel == "Médio" else (1,0.3,0.3,1)
+                            bold: True
+                            color: (0.3, 0.8, 0.5, 1) if root.nivel == "Baixo" else (1, 0.7, 0.2, 1) if root.nivel == "Médio" else (1, 0.3, 0.3, 1)
 
                         Widget:
+                            size_hint_y: None
+                            height: dp(5)
 
                         FloatLayout:
-
                             size_hint_y: None
-                            height: 120
-
+                            height: dp(100)
                             canvas:
-
                                 Color:
-                                    rgba: 0.9,0.9,0.9,1
-
+                                    rgba: 0.9, 0.9, 0.9, 1
                                 Line:
-                                    width: 12
-                                    circle: (self.center_x, self.center_y, 42)
-
+                                    width: dp(8)
+                                    circle: (self.center_x, self.center_y, dp(40))
                                 Color:
-                                    rgba: 0.4,0.8,0.7,1
-
+                                    rgba: 0.4, 0.8, 0.7, 1
                                 Line:
-                                    width: 12
+                                    width: dp(8)
                                     cap: "round"
-                                    circle: (self.center_x, self.center_y, 42, 0, 360 * root.porcentagem)
+                                    circle: (self.center_x, self.center_y, dp(40), 0, 360 * root.porcentagem)
 
                             MDLabel:
                                 id: gauge_label
-
                                 text: "0 kw/h"
-
                                 halign: "center"
-
                                 pos_hint: {"center_x": .5, "center_y": .5}
-
                                 bold: True
-
+                                font_size: dp(13)
                         Widget:
 
+                    MDLabel:
+                        text: "kw / hora"
+                        bold: True
+                        font_size: dp(15)
+                        padding: [dp(15), dp(10), 0, 0]
+                        color: 0.2, 0.05, 0.18, 1
+                        size_hint_y: None
+                        height: dp(30)
+
                     MDBoxLayout:
-                        orientation: "horizontal"
-                        size_hint_x: 0.65
-                        spacing: 10
+                        size_hint_y: None
+                        height: dp(180)
+                        spacing: dp(8)
+                        padding: [dp(12), 0, dp(12), 0]
 
-                        padding: [0, 10]
-
+                        # EIXO Y COM OS VALORES DO LADO (Ajustados para a escala horária de 200)
                         MDBoxLayout:
                             orientation: "vertical"
+                            size_hint_x: None
+                            width: dp(35)
+                            padding: [0, dp(18), 0, dp(15)]
 
                             MDLabel:
-                                font_size: 10
-                                text: "00h"
-                                halign: "center"
-                                adaptive_height: True
-
+                                text: "200"
+                                font_size: dp(11)
+                                halign: "right"
+                                color: 0.6, 0.6, 0.6, 1
                             Widget:
-
-                            Widget:
-                                id: barra1
-                                size_hint_x: None
-                                width: 20
-                                size_hint_y: 0.2
-
-                                canvas.before:
-                                    Color:
-                                        rgba: 0.4,0.8,0.7,1
-
-                                    RoundedRectangle:
-                                        pos: self.pos
-                                        size: self.size
-                                        radius: [8]
-
-                        MDBoxLayout:
-                            orientation: "vertical"
-
                             MDLabel:
-                                font_size: 10
-                                text: "04h"
-                                halign: "center"
-                                adaptive_height: True
-
+                                text: "100"
+                                font_size: dp(11)
+                                halign: "right"
+                                color: 0.6, 0.6, 0.6, 1
                             Widget:
-
-                            Widget:
-                                id: barra2
-                                size_hint_x: None
-                                width: 20
-                                size_hint_y: 0.4
-
-                                canvas.before:
-                                    Color:
-                                        rgba: 0.4,0.8,0.7,1
-
-                                    RoundedRectangle:
-                                        pos: self.pos
-                                        size: self.size
-                                        radius: [8]
-
-                        MDBoxLayout:
-                            orientation: "vertical"
-
                             MDLabel:
-                                font_size: 10
-                                text: "08h"
-                                halign: "center"
-                                adaptive_height: True
+                                text: "0"
+                                font_size: dp(11)
+                                halign: "right"
+                                color: 0.6, 0.6, 0.6, 1
 
-                            Widget:
+                        # CHÃO MATEMÁTICO RÍGIDO (Gráfico de Barras)
+                        MDRelativeLayout:
+                            canvas.before:
+                                Color:
+                                    rgba: 0.9, 0.9, 0.9, 0.6
+                                Line:
+                                    points: [0, self.height - dp(25), self.width, self.height - dp(25)]
+                                    width: 1
+                                    dash_length: dp(3)
+                                    dash_offset: dp(3)
 
-                            Widget:
-                                id: barra3
-                                size_hint_x: None
-                                width: 20
-                                size_hint_y: 0.6
+                                Color:
+                                    rgba: 0.88, 0.88, 0.88, 1
+                                Line:
+                                    points: [0, (self.height - dp(45)) / 2 + dp(20), self.width, (self.height - dp(45)) / 2 + dp(20)]
+                                    width: 1
 
-                                canvas.before:
-                                    Color:
-                                        rgba: 0.4,0.8,0.7,1
+                                Color:
+                                    rgba: 0.35, 0.35, 0.35, 1
+                                Line:
+                                    points: [0, dp(20), self.width, dp(20)]
+                                    width: 1.5
 
-                                    RoundedRectangle:
-                                        pos: self.pos
-                                        size: self.size
-                                        radius: [8]
+                            MDBoxLayout:
+                                orientation: "horizontal"
+                                spacing: dp(12)
+                                size_hint: 1, 1
+                                pos_hint: {"x": 0, "y": 0}
 
-                        MDBoxLayout:
-                            orientation: "vertical"
+                                # HORÁRIO: 00h
+                                MDBoxLayout:
+                                    orientation: "vertical"
+                                    MDFloatLayout:
+                                        Widget:
+                                            id: barra_00h
+                                            size_hint: (None, None)
+                                            width: dp(16)
+                                            pos_hint: {"center_x": .5, "y": 0.115}
+                                            canvas.before:
+                                                Color:
+                                                    rgba: (0.5, 0.75, 0.68, 1) if self.size_hint_y and self.size_hint_y > 0 else (0.93, 0.93, 0.93, 1)
+                                                RoundedRectangle:
+                                                    pos: self.pos
+                                                    size: self.size
+                                                    radius: [dp(4), dp(4), 0, 0]
+                                    MDLabel:
+                                        text: "00h"
+                                        halign: "center"
+                                        font_size: dp(11)
+                                        color: 0.5, 0.5, 0.5, 1
+                                        size_hint_y: None
+                                        height: dp(20)
 
-                            MDLabel:
-                                font_size: 10
-                                text: "12h"
-                                halign: "center"
-                                adaptive_height: True
+                                # HORÁRIO: 04h
+                                MDBoxLayout:
+                                    orientation: "vertical"
+                                    MDFloatLayout:
+                                        Widget:
+                                            id: barra_04h
+                                            size_hint: (None, None)
+                                            width: dp(16)
+                                            pos_hint: {"center_x": .5, "y": 0.115}
+                                            canvas.before:
+                                                Color:
+                                                    rgba: (0.5, 0.75, 0.68, 1) if self.size_hint_y and self.size_hint_y > 0 else (0.93, 0.93, 0.93, 1)
+                                                RoundedRectangle:
+                                                    pos: self.pos
+                                                    size: self.size
+                                                    radius: [dp(4), dp(4), 0, 0]
+                                    MDLabel:
+                                        text: "04h"
+                                        halign: "center"
+                                        font_size: dp(11)
+                                        color: 0.5, 0.5, 0.5, 1
+                                        size_hint_y: None
+                                        height: dp(20)
 
-                            Widget:
+                                # HORÁRIO: 08h
+                                MDBoxLayout:
+                                    orientation: "vertical"
+                                    MDFloatLayout:
+                                        Widget:
+                                            id: barra_08h
+                                            size_hint: (None, None)
+                                            width: dp(16)
+                                            pos_hint: {"center_x": .5, "y": 0.115}
+                                            canvas.before:
+                                                Color:
+                                                    rgba: (0.5, 0.75, 0.68, 1) if self.size_hint_y and self.size_hint_y > 0 else (0.93, 0.93, 0.93, 1)
+                                                RoundedRectangle:
+                                                    pos: self.pos
+                                                    size: self.size
+                                                    radius: [dp(4), dp(4), 0, 0]
+                                    MDLabel:
+                                        text: "08h"
+                                        halign: "center"
+                                        font_size: dp(11)
+                                        color: 0.5, 0.5, 0.5, 1
+                                        size_hint_y: None
+                                        height: dp(20)
 
-                            Widget:
-                                id: barra4
-                                size_hint_x: None
-                                width: 20
-                                size_hint_y: 0.9
+                                # HORÁRIO: 12h
+                                MDBoxLayout:
+                                    orientation: "vertical"
+                                    MDFloatLayout:
+                                        Widget:
+                                            id: barra_12h
+                                            size_hint: (None, None)
+                                            width: dp(16)
+                                            pos_hint: {"center_x": .5, "y": 0.115}
+                                            canvas.before:
+                                                Color:
+                                                    rgba: (0.5, 0.75, 0.68, 1) if self.size_hint_y and self.size_hint_y > 0 else (0.93, 0.93, 0.93, 1)
+                                                RoundedRectangle:
+                                                    pos: self.pos
+                                                    size: self.size
+                                                    radius: [dp(4), dp(4), 0, 0]
+                                    MDLabel:
+                                        text: "12h"
+                                        halign: "center"
+                                        font_size: dp(11)
+                                        color: 0.5, 0.5, 0.5, 1
+                                        size_hint_y: None
+                                        height: dp(20)
 
-                                canvas.before:
-                                    Color:
-                                        rgba: 0.4,0.8,0.7,1
+                                # HORÁRIO: 16h
+                                MDBoxLayout:
+                                    orientation: "vertical"
+                                    MDFloatLayout:
+                                        Widget:
+                                            id: barra_16h
+                                            size_hint: (None, None)
+                                            width: dp(16)
+                                            pos_hint: {"center_x": .5, "y": 0.115}
+                                            canvas.before:
+                                                Color:
+                                                    rgba: (0.5, 0.75, 0.68, 1) if self.size_hint_y and self.size_hint_y > 0 else (0.93, 0.93, 0.93, 1)
+                                                RoundedRectangle:
+                                                    pos: self.pos
+                                                    size: self.size
+                                                    radius: [dp(4), dp(4), 0, 0]
+                                    MDLabel:
+                                        text: "16h"
+                                        halign: "center"
+                                        font_size: dp(11)
+                                        color: 0.5, 0.5, 0.5, 1
+                                        size_hint_y: None
+                                        height: dp(20)
 
-                                    RoundedRectangle:
-                                        pos: self.pos
-                                        size: self.size
-                                        radius: [8]
+                                # HORÁRIO: 20h
+                                MDBoxLayout:
+                                    orientation: "vertical"
+                                    MDFloatLayout:
+                                        Widget:
+                                            id: barra_20h
+                                            size_hint: (None, None)
+                                            width: dp(16)
+                                            pos_hint: {"center_x": .5, "y": 0.115}
+                                            canvas.before:
+                                                Color:
+                                                    rgba: (0.5, 0.75, 0.68, 1) if self.size_hint_y and self.size_hint_y > 0 else (0.93, 0.93, 0.93, 1)
+                                                RoundedRectangle:
+                                                    pos: self.pos
+                                                    size: self.size
+                                                    radius: [dp(4), dp(4), 0, 0]
+                                    MDLabel:
+                                        text: "20h"
+                                        halign: "center"
+                                        font_size: dp(11)
+                                        color: 0.5, 0.5, 0.5, 1
+                                        size_hint_y: None
+                                        height: dp(20)
 
-                        MDBoxLayout:
-                            orientation: "vertical"
+        Widget:
+            size_hint_y: 1
 
-                            MDLabel:
-                                font_size: 10
-                                text: "16h"
-                                halign: "center"
-                                adaptive_height: True
 
-                            Widget:
-
-                            Widget:
-                                id: barra5
-                                size_hint_x: None
-                                width: 20
-                                size_hint_y: 0.7
-
-                                canvas.before:
-                                    Color:
-                                        rgba: 0.4,0.8,0.7,1
-
-                                    RoundedRectangle:
-                                        pos: self.pos
-                                        size: self.size
-                                        radius: [8]
-
-                        MDBoxLayout:
-                            orientation: "vertical"
-
-                            MDLabel:
-                                font_size: 10
-                                text: "20h"
-                                halign: "center"
-                                adaptive_height: True
-
-                            Widget:
-
-                            Widget:
-                                id: barra6
-                                size_hint_x: None
-                                width: 20
-                                size_hint_y: 0.5
-
-                                canvas.before:
-                                    Color:
-                                        rgba: 0.4,0.8,0.7,1
-
-                                    RoundedRectangle:
-                                        pos: self.pos
-                                        size: self.size
-                                        radius: [8]
-
-            MDBoxLayout:
-                size_hint_y: None
-                height: 50
-                spacing: 50
-                adaptive_width: False
-
-                Widget:
-
-                MDIconButton:
-                    icon:
-                        "home" if root.manager.current == "home" else "home-outline"
-
-                    theme_icon_color: "Custom"
-
-                    icon_color:
-                        (0.1, 0.5, 0.2, 1) if root.manager.current == "home" else (0.6, 0.6, 0.6, 1)
-
-                    on_release:
-                        root.manager.transition.direction = "left"
-                        root.manager.current = "home"
-
-                MDIconButton:
-                    icon: "lightbulb-outline"
-                    pos_hint: {"center_y": .5}
-                    on_release:
-                        root.manager.transition.direction = "left"
-                        root.manager.current = "ideias"
-
-                MDIconButton:
-                    icon: "account"
-                    pos_hint: {"center_y": .5}
-
-                Widget:
 
 <Historico>:
     name: "historico"
@@ -400,8 +479,8 @@
                 icon_color: 0.2,0.05,0.18,1
 
                 on_release:
-                    app.root.current = "home"
-                    app.root.transition.direction = "right"
+                    app.root.ids.screen_manager.current = "home"
+                    app.root.ids.screen_manager.transition.direction = "right"
 
             MDLabel:
                 text: "Histórico"
@@ -953,8 +1032,8 @@
                 icon_color: 0.2, 0.05, 0.18, 1
 
                 on_release:
-                    app.root.current = "home"
-                    app.root.transition.direction = "right"
+                    app.root.ids.screen_manager.current = "home"
+                    app.root.ids.screen_manager.transition.direction = "right"
 
             MDLabel:
                 text: "Aparelhos"
@@ -1002,8 +1081,8 @@
                         radius: [22]
 
                 on_release:
-                    app.root.current = "geladeira"
-                    app.root.transition.direction = "left"
+                    app.root.ids.screen_manager.current = "geladeira"
+                    app.root.ids.screen_manager.transition.direction = "left"
 
                 MDBoxLayout:
                     size_hint_y: None
@@ -1095,8 +1174,8 @@
                         radius: [22]
 
                 on_release:
-                    app.root.current = "ventilador"
-                    app.root.transition.direction = "left"
+                    app.root.ids.screen_manager.current = "ventilador"
+                    app.root.ids.screen_manager.transition.direction = "left"
 
                 MDBoxLayout:
                     size_hint_y: None
@@ -1195,20 +1274,15 @@
 
 <Geladeira>:
     name: "geladeira"
+    on_enter: self.carregar_dados()
 
     MDBoxLayout:
         orientation: "vertical"
-        padding: [20, 20, 20, 20]
-        spacing: 25
+        md_bg_color: 1, 1, 1, 1
+        spacing: 0
+        padding: 0
 
-        canvas.before:
-            Color:
-                rgba: 1,1,1,1
-
-            Rectangle:
-                pos: self.pos
-                size: self.size
-
+        # HEADER FIXO NO TOPO
         MDBoxLayout:
             size_hint_y: None
             height: 40
@@ -1216,351 +1290,318 @@
 
             MDIconButton:
                 icon: "arrow-left"
-
                 theme_icon_color: "Custom"
-                icon_color: 0.2,0.05,0.18,1
+                icon_color: 0.2, 0.05, 0.18, 1
 
                 on_release:
-                    app.root.current = "aparelhos"
-                    app.root.transition.direction = "right"
+                    app.root.ids.screen_manager.current = "home"
+                    app.root.ids.screen_manager.transition.direction = "right"
 
             MDLabel:
                 text: "Geladeira"
-
                 bold: True
-                font_size: 24
+                font_size: 22
+                color: 0.2, 0.05, 0.18, 1
+                valign: "middle"
 
-                color: 0.2,0.05,0.18,1
-
-        Widget:
+        MDBoxLayout:
+            orientation: "horizontal"
             size_hint_y: None
-            height: 10
+            height: dp(70)
+            padding: [dp(30), 0, dp(30), 0]
 
+        # GRÁFICO CIRCULAR (GAUGE COPIADO)
         FloatLayout:
             size_hint_y: None
-            height: 260
+            height: dp(220)
             halign: "center"
 
             canvas:
-
                 Color:
-                    rgba: 0.85,0.9,0.88,1
-
+                    rgba: 0.85, 0.9, 0.88, 1
                 Line:
-                    width: 20
-                    circle:
-                        (self.center_x,
-                        self.center_y + 10,
-                        95,
-                        -90,
-                        90)
-
+                    width: dp(16)
+                    circle: (self.center_x, self.center_y + 10, dp(85), -90, 90)
                 Color:
-                    rgba: 0.45,0.7,0.65,1
-
+                    rgba: 0.45, 0.7, 0.65, 1
                 Line:
-                    width: 20
-                    circle:
-                        (self.center_x, self.center_y + 10,
-                        95,
-                        -90,
-                        (-90) + (180 * root.porcentagem))
-
+                    width: dp(16)
+                    circle: (self.center_x, self.center_y + 10, dp(85), -90, -90 + (180 * root.porcentagem))
 
             MDLabel:
                 text: f"{root.kw_dia}"
-
-                font_size: 42
+                font_size: dp(38)
                 bold: True
                 halign: "center"
-
-                color: 0.2,0.05,0.18,1
-
+                color: 0.2, 0.05, 0.18, 1
                 pos_hint: {"center_x": .5, "center_y": .48}
 
             MDLabel:
                 text: "kw / dia"
-
-                font_size: 20
-
+                font_size: dp(16)
                 halign: "center"
-
-                color: 0.7,0.7,0.7,1
-
+                color: 0.7, 0.7, 0.7, 1
                 pos_hint: {"center_x": .5, "center_y": .32}
 
             MDCard:
                 size_hint: None, None
-                size: 120, 45
-
+                size: dp(120), dp(38)
                 pos_hint: {"center_x": .5, "y": 0}
-
-                radius: [16]
-
-                md_bg_color: 0.87,0.95,0.9,1
-
+                radius: [dp(16)]
+                md_bg_color: 0.87, 0.95, 0.9, 1
                 elevation: 0
 
                 MDLabel:
                     text: root.data_atual
-
                     halign: "center"
-
                     bold: True
-
-                    color: 0.5,0.7,0.6,1
+                    color: 0.5, 0.7, 0.6, 1
 
         Widget:
             size_hint_y: None
-            height: 10
+            height: dp(5)
 
+        MDBoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            height: dp(70)
+            padding: [dp(30), 0, dp(30), 0]
+
+        # TÍTULO DO GRÁFICO
         MDLabel:
             text: "kw / dia"
-
             bold: True
-            font_size: 15
-
-            color: 0.2,0.05,0.18,1
-
+            font_size: dp(15)
+            padding: [dp(30), 0, dp(30), 0]
+            color: 0.2, 0.05, 0.18, 1
             size_hint_y: None
             height: self.texture_size[1]
 
+        # ÁREA DE BARRAS RECALIBRADA E CORRIGIDA
         MDBoxLayout:
             size_hint_y: None
-            height: 240
-            spacing: 8
-            padding: [0, 0, 10, 0]
+            height: dp(180)
+            spacing: dp(8)
+            padding: [dp(12), dp(10), dp(12), 0]
 
+            # EIXO Y COM TEXTO ALINHADO ÀS LINHAS
             MDBoxLayout:
                 orientation: "vertical"
                 size_hint_x: None
-                width: 35
+                width: dp(35)
+                padding: [0, dp(18), 0, dp(15)]
 
                 MDLabel:
                     text: "360"
-                    font_size: 11
+                    font_size: dp(11)
                     halign: "right"
-                    valign: "top"
-
+                    color: 0.6, 0.6, 0.6, 1
                 Widget:
-
                 MDLabel:
                     text: "180"
-                    font_size: 11
+                    font_size: dp(11)
                     halign: "right"
-                    valign: "middle"
-
+                    color: 0.6, 0.6, 0.6, 1
                 Widget:
-
                 MDLabel:
                     text: "0"
-                    font_size: 11
+                    font_size: dp(11)
                     halign: "right"
-                    valign: "bottom"
+                    color: 0.6, 0.6, 0.6, 1
 
-            FloatLayout:
-
+            # CHÃO MATEMÁTICO RÍGIDO (Gráfico de Barras)
+            MDRelativeLayout:
                 canvas.before:
                     Color:
-                        rgba: 0.85,0.85,0.85,1
-
+                        rgba: 0.9, 0.9, 0.9, 0.6
                     Line:
-                        points: [self.x, self.center_y, self.right, self.center_y]
+                        points: [0, self.height - dp(25), self.width, self.height - dp(25)]
+                        width: 1
+                        dash_length: dp(3)
+                        dash_offset: dp(3)
+
+                    Color:
+                        rgba: 0.88, 0.88, 0.88, 1
+                    Line:
+                        points: [0, (self.height - dp(45)) / 2 + dp(20), self.width, (self.height - dp(45)) / 2 + dp(20)]
                         width: 1
 
-                MDBoxLayout:
-                    spacing: 12
-                    size_hint: 1, 1
-                    pos_hint: {"center_x": .5, "center_y": .5}
+                    Color:
+                        rgba: 0.35, 0.35, 0.35, 1
+                    Line:
+                        points: [0, dp(20), self.width, dp(20)]
+                        width: 1.5
 
+                MDBoxLayout:
+                    orientation: "horizontal"
+                    spacing: dp(10)
+                    size_hint: 1, 1
+                    pos_hint: {"x": 0, "y": -0.09}
+
+                    # DOMINGO
                     MDBoxLayout:
                         orientation: "vertical"
-                        spacing: 5
-
-                        Widget:
-
-                        Widget:
-                            size_hint: None, None
-                            width: 20
-                            height: root.dia1
-
-                            canvas.before:
-                                Color:
-                                    rgba: 0.5,0.75,0.68,1
-
-                                RoundedRectangle:
-                                    pos: self.pos
-                                    size: self.size
-                                    radius: [6]
-
+                        MDFloatLayout:
+                            Widget:
+                                size_hint: (None, root.dia1)
+                                width: dp(16)
+                                pos_hint: {"center_x": .5, "y": 0.11} # 0.11 afasta precisamente da base preta
+                                canvas.before:
+                                    Color:
+                                        rgba: (0.5, 0.75, 0.68, 1) if root.dia1 > 0 else (0.93, 0.93, 0.93, 1)
+                                    RoundedRectangle:
+                                        pos: self.pos
+                                        size: self.size
+                                        radius: [dp(4), dp(4), 0, 0]
                         MDLabel:
                             text: "dom"
                             halign: "center"
-                            font_size: 11
+                            font_size: dp(11)
+                            color: 0.5, 0.5, 0.5, 1
                             size_hint_y: None
-                            height: 20
+                            height: dp(20)
 
+                    # SEGUNDA
                     MDBoxLayout:
                         orientation: "vertical"
-                        spacing: 5
-
-                        Widget:
-
-                        Widget:
-                            size_hint: None, None
-                            width: 20
-                            height: root.dia2
-
-                            canvas.before:
-                                Color:
-                                    rgba: 0.5,0.75,0.68,1
-
-                                RoundedRectangle:
-                                    pos: self.pos
-                                    size: self.size
-                                    radius: [6]
-
+                        MDFloatLayout:
+                            Widget:
+                                size_hint: (None, root.dia2)
+                                width: dp(16)
+                                pos_hint: {"center_x": .5, "y": 0.11}
+                                canvas.before:
+                                    Color:
+                                        rgba: (0.5, 0.75, 0.68, 1) if root.dia2 > 0 else (0.93, 0.93, 0.93, 1)
+                                    RoundedRectangle:
+                                        pos: self.pos
+                                        size: self.size
+                                        radius: [dp(4), dp(4), 0, 0]
                         MDLabel:
                             text: "seg"
                             halign: "center"
-                            font_size: 11
+                            font_size: dp(11)
+                            color: 0.5, 0.5, 0.5, 1
                             size_hint_y: None
-                            height: 20
+                            height: dp(20)
 
+                    # TERÇA
                     MDBoxLayout:
                         orientation: "vertical"
-                        spacing: 5
-
-                        Widget:
-
-                        Widget:
-                            size_hint: None, None
-                            width: 20
-                            height: root.dia3
-
-                            canvas.before:
-                                Color:
-                                    rgba: 0.5,0.75,0.68,1
-
-                                RoundedRectangle:
-                                    pos: self.pos
-                                    size: self.size
-                                    radius: [6]
-
+                        MDFloatLayout:
+                            Widget:
+                                size_hint: (None, root.dia3)
+                                width: dp(16)
+                                pos_hint: {"center_x": .5, "y": 0.11}
+                                canvas.before:
+                                    Color:
+                                        rgba: (0.5, 0.75, 0.68, 1) if root.dia3 > 0 else (0.93, 0.93, 0.93, 1)
+                                    RoundedRectangle:
+                                        pos: self.pos
+                                        size: self.size
+                                        radius: [dp(4), dp(4), 0, 0]
                         MDLabel:
                             text: "ter"
                             halign: "center"
-                            font_size: 11
+                            font_size: dp(11)
+                            color: 0.5, 0.5, 0.5, 1
                             size_hint_y: None
-                            height: 20
+                            height: dp(20)
 
+                    # QUARTA
                     MDBoxLayout:
                         orientation: "vertical"
-                        spacing: 5
-
-                        Widget:
-
-                        Widget:
-                            size_hint: None, None
-                            width: 20
-                            height: root.dia4
-
-                            canvas.before:
-                                Color:
-                                    rgba: 0.5,0.75,0.68,1
-
-                                RoundedRectangle:
-                                    pos: self.pos
-                                    size: self.size
-                                    radius: [6]
-
+                        MDFloatLayout:
+                            Widget:
+                                size_hint: (None, root.dia4)
+                                width: dp(16)
+                                pos_hint: {"center_x": .5, "y": 0.11}
+                                canvas.before:
+                                    Color:
+                                        rgba: (0.5, 0.75, 0.68, 1) if root.dia4 > 0 else (0.93, 0.93, 0.93, 1)
+                                    RoundedRectangle:
+                                        pos: self.pos
+                                        size: self.size
+                                        radius: [dp(4), dp(4), 0, 0]
                         MDLabel:
                             text: "qua"
                             halign: "center"
-                            font_size: 11
+                            font_size: dp(11)
+                            color: 0.5, 0.5, 0.5, 1
                             size_hint_y: None
-                            height: 20
+                            height: dp(20)
 
+                    # QUINTA
                     MDBoxLayout:
                         orientation: "vertical"
-                        spacing: 5
-
-                        Widget:
-
-                        Widget:
-                            size_hint: None, None
-                            width: 20
-                            height: root.dia5
-
-                            canvas.before:
-                                Color:
-                                    rgba: 0.5,0.75,0.68,1
-
-                                RoundedRectangle:
-                                    pos: self.pos
-                                    size: self.size
-                                    radius: [6]
-
+                        MDFloatLayout:
+                            Widget:
+                                size_hint: (None, root.dia5)
+                                width: dp(16)
+                                pos_hint: {"center_x": .5, "y": 0.11}
+                                canvas.before:
+                                    Color:
+                                        rgba: (0.5, 0.75, 0.68, 1) if root.dia5 > 0 else (0.93, 0.93, 0.93, 1)
+                                    RoundedRectangle:
+                                        pos: self.pos
+                                        size: self.size
+                                        radius: [dp(4), dp(4), 0, 0]
                         MDLabel:
                             text: "qui"
                             halign: "center"
-                            font_size: 11
+                            font_size: dp(11)
+                            color: 0.5, 0.5, 0.5, 1
                             size_hint_y: None
-                            height: 20
+                            height: dp(20)
 
+                    # SEXTA
                     MDBoxLayout:
                         orientation: "vertical"
-                        spacing: 5
-
-                        Widget:
-
-                        Widget:
-                            size_hint: None, None
-                            width: 20
-                            height: root.dia6
-
-                            canvas.before:
-                                Color:
-                                    rgba: 0.5,0.75,0.68,1
-
-                                RoundedRectangle:
-                                    pos: self.pos
-                                    size: self.size
-                                    radius: [6]
-
+                        MDFloatLayout:
+                            Widget:
+                                size_hint: (None, root.dia6)
+                                width: dp(16)
+                                pos_hint: {"center_x": .5, "y": 0.11}
+                                canvas.before:
+                                    Color:
+                                        rgba: (0.5, 0.75, 0.68, 1) if root.dia6 > 0 else (0.93, 0.93, 0.93, 1)
+                                    RoundedRectangle:
+                                        pos: self.pos
+                                        size: self.size
+                                        radius: [dp(4), dp(4), 0, 0]
                         MDLabel:
                             text: "sex"
                             halign: "center"
-                            font_size: 11
+                            font_size: dp(11)
+                            color: 0.5, 0.5, 0.5, 1
                             size_hint_y: None
-                            height: 20
+                            height: dp(20)
 
+                    # SÁBADO
                     MDBoxLayout:
                         orientation: "vertical"
-                        spacing: 5
-
-                        Widget:
-
-                        Widget:
-                            size_hint: None, None
-                            width: 20
-                            height: root.dia7
-
-                            canvas.before:
-                                Color:
-                                    rgba: 0.5,0.75,0.68,1
-
-                                RoundedRectangle:
-                                    pos: self.pos
-                                    size: self.size
-                                    radius: [6]
-
+                        MDFloatLayout:
+                            Widget:
+                                size_hint: (None, root.dia7)
+                                width: dp(16)
+                                pos_hint: {"center_x": .5, "y": 0.11}
+                                canvas.before:
+                                    Color:
+                                        rgba: (0.5, 0.75, 0.68, 1) if root.dia7 > 0 else (0.93, 0.93, 0.93, 1)
+                                    RoundedRectangle:
+                                        pos: self.pos
+                                        size: self.size
+                                        radius: [dp(4), dp(4), 0, 0]
                         MDLabel:
                             text: "sab"
                             halign: "center"
-                            font_size: 11
+                            font_size: dp(11)
+                            color: 0.5, 0.5, 0.5, 1
                             size_hint_y: None
-                            height: 20
+                            height: dp(20)
+
+        # ESPAÇADOR ELÁSTICO FINAL (Força o cabeçalho a ficar colado no teto)
+        Widget:
+            size_hint_y: 1
 
 <Ventilador>:
     name: "ventilador"
@@ -1573,22 +1614,33 @@
         icon: "arrow-left"
 
         on_release:
-            app.root.current = "aparelhos"
-            app.root.transition.direction = "right"
+            app.root.ids.screen_manager.current = "aparelhos"
+            app.root.ids.screen_manager.transition.direction = "right"
             
 <Ideias>:
     name: "ideias"
 
+    # Forçamos um fundo branco sólido para a tela inteira. Isso elimina de vez os "fantasmas" atrás do Carousel.
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
     MDBoxLayout:
         orientation: "vertical"
         padding: dp(20)
-        spacing: dp(20)
+        spacing: dp(15) # Reduzido levemente para equilibrar o espaço vertical
 
+        # TÍTULO 1
         MDLabel:
             text: "Economia consciente"
+            font_style: "H6" # Dá um destaque elegante de título profissional
             bold: True
             size_hint_y: None
             height: self.texture_size[1]
+            color: 0.2, 0.05, 0.18, 1
 
         # CARROSSEL DE DICAS
         MDCarousel:
@@ -1597,22 +1649,25 @@
             height: dp(180)
 
             FitImage:
-                source: "Images/dica1.png"
-                radius: [20,]
+                source: "images/dica1.png"
+                radius: [dp(20),]
 
             FitImage:
-                source: "Images/dica2.png"
-                radius: [20,]
+                source: "images/dica2.png"
+                radius: [dp(20),]
 
             FitImage:
-                source: "Images/dica3.png"
-                radius: [20,]
+                source: "images/dica3.png"
+                radius: [dp(20),]
 
+        # TÍTULO 2
         MDLabel:
             text: "Pontos e recompensas"
-            bold: True
+            font_style: "Subtitle1"
+            bold: False # Forçado False para garantir que não fique negrito
             size_hint_y: None
             height: self.texture_size[1]
+            color: 0.2, 0.05, 0.18, 1
 
         # CARDS DESLIZÁVEIS
         ScrollView:
@@ -1624,125 +1679,142 @@
             MDBoxLayout:
                 adaptive_width: True
                 spacing: dp(15)
-                padding: [0,0,20,0]
+                padding: [0, 0, dp(20), 0]
 
                 MDCard:
                     size_hint: None, None
-                    size: dp(120), dp(120)
+                    size: dp(140), dp(120) # Aumentado largura para caber o conteúdo confortavelmente
                     radius: [15,]
+                    md_bg_color: 0.95, 0.95, 0.95, 1
 
                     MDBoxLayout:
                         orientation: "vertical"
                         padding: dp(10)
+                        spacing: dp(5)
 
                         MDLabel:
                             text: "Ler dicas"
+                            bold: True
+                            font_size: "14sp"
 
                         MDLabel:
                             text: "+50 pontos"
+                            font_size: "12sp"
+                            color: 0.4, 0.7, 0.5, 1
 
                         MDRaisedButton:
                             text: "Resgatar"
+                            size_hint_x: 1
+                            font_size: "11sp"
 
                 MDCard:
                     size_hint: None, None
-                    size: dp(120), dp(120)
+                    size: dp(140), dp(120)
                     radius: [15,]
+                    md_bg_color: 0.95, 0.95, 0.95, 1
 
                     MDBoxLayout:
                         orientation: "vertical"
                         padding: dp(10)
+                        spacing: dp(5)
 
                         MDLabel:
                             text: "Economizar"
+                            bold: True
+                            font_size: "14sp"
 
                         MDLabel:
                             text: "+200 pontos"
+                            font_size: "12sp"
+                            color: 0.4, 0.7, 0.5, 1
 
                 MDCard:
                     size_hint: None, None
-                    size: dp(120), dp(120)
+                    size: dp(140), dp(120)
                     radius: [15,]
+                    md_bg_color: 0.95, 0.95, 0.95, 1
 
+        # BOTÃO VER PRÊMIOS CORRIGIDO
         MDTextButton:
             text: "Ver prêmios"
+            theme_text_color: "Custom"      # Obrigatório para o KivyMD aceitar sua cor customizada
+            text_color: 0.5, 0.5, 0.5, 1    # Substitui a propriedade 'color' que falhava
+            font_size: "12sp"               # Define o tamanho pequeno desejado usando sp estável
             pos_hint: {"center_x": .15}
 
+        # TÍTULO 3
         MDLabel:
             text: "Meus hábitos"
-            bold: True
+            font_style: "Subtitle1"
+            bold: False # Forçado False para não herdar negrito indesejado
             size_hint_y: None
             height: self.texture_size[1]
+            color: 0.2, 0.05, 0.18, 1
 
         MDRaisedButton:
             text: "▼ maio"
             size_hint: None, None
-            size: dp(90), dp(40)
+            size: dp(90), dp(35)
             md_bg_color: .85, .95, .88, 1
             text_color: .4, .7, .5, 1
 
+        # SEÇÃO INFERIOR DE HÁBITOS
         MDBoxLayout:
             spacing: dp(20)
+            size_hint_y: None
+            height: dp(80) # Trava a altura para organizar a proporção da tela
 
             # LADO ESQUERDO
             MDBoxLayout:
                 orientation: "vertical"
+                spacing: dp(5)
 
                 MDLabel:
                     text: "Economia mensal"
                     halign: "center"
-
-                Widget:
+                    font_size: "14sp"
+                    color: 0.5, 0.5, 0.5, 1
 
                 MDLabel:
                     text: "X %"
                     halign: "center"
-
-                Widget:
+                    font_size: "24sp"
+                    bold: True
+                    color: 0.2, 0.05, 0.18, 1
 
             # LADO DIREITO
             MDBoxLayout:
                 orientation: "vertical"
+                spacing: dp(2)
 
                 MDLabel:
                     text: "Total economizado"
+                    font_size: "13sp"
+                    color: 0.5, 0.5, 0.5, 1
 
                 MDLabel:
                     text: "XXX Kw"
-                    font_size: "28sp"
+                    font_size: "24sp"
                     bold: True
+                    color: 0.2, 0.05, 0.18, 1
 
-                MDLabel:
-                    text: "Rendimento"
+                MDBoxLayout:
+                    orientation: "horizontal"
+                    spacing: dp(8)
+                    
+                    MDLabel:
+                        text: "Rendimento"
+                        font_size: "13sp"
+                        size_hint_x: None
+                        width: self.texture_size[0]
 
-                MDChip:
-                    text: "Positivo"
+                    MDChip:
+                        text: "Positivo"
+                        elevation: 0
+                        size_hint_y: None
+                        height: dp(24)
 
+        # O Widget elástico final que joga tudo estruturado para o topo da tela,
+        # impedindo que o menu inferior ou resoluções diferentes esmaguem seu layout.
         Widget:
-
-        # MENU INFERIOR
-        MDBoxLayout:
-            size_hint_y: None
-            height: dp(60)
-            spacing: dp(40)
-
-            Widget:
-
-            MDIconButton:
-                icon:
-                    "home" if root.manager.current == "home" else "home-outline"
-
-                on_release:
-                    root.manager.current = "home"
-                    app.root.transition.direction = "right"
-
-            MDIconButton:
-                icon: "lightbulb"
-                theme_bg_color: "Custom"
-                md_bg_color: 0.85,0.75,1,1
-                radius: [25,]
-
-            MDIconButton:
-                icon: "account"
-
-            Widget:
+            size_hint_y: 1

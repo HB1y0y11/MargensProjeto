@@ -4,16 +4,16 @@ Config.set("graphics", "width", "360")
 Config.set("graphics", "height", "740")
 Config.set("graphics", "resizable", False)
 
+from kivy.lang import Builder
 from kivymd.app import MDApp
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.clock import Clock
-from kivy.properties import NumericProperty
-from kivy.properties import StringProperty
+from kivy.properties import NumericProperty, StringProperty
 from datetime import datetime
-from kivymd.uix.menu import MDDropdownMenu
-
+from kivymd.uix.boxlayout import MDBoxLayout
 import firebase_admin
 from firebase_admin import credentials, db
+import os
 
 MESES = [
     "jan", "fev", "mar", "abr",
@@ -22,23 +22,59 @@ MESES = [
 ]
 
 ESCALA_GRAFICO = 160 / 300
-
-import os
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 firebase_path = os.path.join(BASE_DIR, "firebase_key.json")
 
-cred = credentials.Certificate(firebase_path)
+# Inicialização segura do Firebase
+if not firebase_admin._apps:
+    cred = credentials.Certificate(firebase_path)
+    firebase_admin.initialize_app(cred, {
+        "databaseURL": "https://margens-13760-default-rtdb.firebaseio.com/"
+    })
 
-firebase_admin.initialize_app(cred, {
-    "databaseURL": "https://margens-13760-default-rtdb.firebaseio.com/"
-})
+class TelaPrincipal(MDBoxLayout):
+    pass
 
 class Gerenciador(ScreenManager):
     pass
 
-class Ideias(Screen):
-    pass
+# ============================================================
+# CLASSES DAS TELAS RECALIBRADAS COM AS PROPRIEDADES ANTIGAS
+# ============================================================
+
+class Home(Screen):
+    porcentagem = NumericProperty(0)
+    nivel = StringProperty("Baixo")
+
+    def carregar_dados(self):
+        try:
+            ref = db.reference("/consumo/hoje")
+            dados = ref.get()
+            if not dados:
+                return
+
+            total = dados.get("total", 0)
+            if 'gauge_label' in self.ids:
+                self.ids.gauge_label.text = f"{total} kw/h"
+            self.porcentagem = total / 300
+
+            if total < 100:
+                self.nivel = "Baixo"
+            elif total < 200:
+                self.nivel = "Médio"
+            else:
+                self.nivel = "Alto"
+
+            # Atualização segura das barras gráficas
+            barras_horarios = ["barra_00h", "barra_04h", "barra_08h", "barra_12h", "barra_16h", "barra_20h"]
+            chaves_firebase = ["00h", "04h", "08h", "12h", "16h", "20h"]
+            for id_barra, chave in zip(barras_horarios, chaves_firebase):
+                if id_barra in self.ids:
+                    valor_firebase = dados.get(chave, 0)
+                    self.ids[id_barra].size_hint_y = valor_firebase / 200
+                    
+        except Exception as e:
+            print(f"Erro na Home ao carregar Firebase: {e}")
 
 class Historico(Screen):
 
@@ -295,11 +331,10 @@ class Aparelhos(Screen):
             print(e)
 
 class Geladeira(Screen):
-    kw_dia = NumericProperty(0)
-
     porcentagem = NumericProperty(0)
-    data_atual = StringProperty("")
-
+    kw_dia = StringProperty("0.0")
+    data_atual = StringProperty("--/--")
+    
     dia1 = NumericProperty(0)
     dia2 = NumericProperty(0)
     dia3 = NumericProperty(0)
@@ -309,105 +344,78 @@ class Geladeira(Screen):
     dia7 = NumericProperty(0)
 
     def carregar_dados(self):
-
-        hoje = datetime.now()
-
-        MESES
-
-        self.data_atual = f"{hoje.day} {MESES[hoje.month - 1]}"
-
         try:
+            hoje = datetime.now()
+            self.data_atual = f"{hoje.day} {MESES[hoje.month - 1]}"
 
             ref = db.reference("/aparelhos/geladeira")
-
             dados = ref.get()
+            
+            if dados:
+                # Carrega o consumo de kW/dia
+                consumo = dados.get('kw_dia', 0)
+                self.kw_dia = str(consumo)
+                
+                # Sincroniza o gráfico em pizza/arco central (0.0 a 1.0)
+                self.porcentagem = min(1.0, float(consumo) / 300.0) if consumo else 0.0
+                
+                if 'data' in dados:
+                    self.data_atual = dados.get('data')
 
-            # CONSUMO PRINCIPAL
-            self.kw_dia = dados["kw_dia"]
-
-            self.porcentagem = min(self.kw_dia / 500, 1)
-
-            # GRAFICO
-            semana = dados["semana"]
-
-            self.dia1 = semana["dom"] * ESCALA_GRAFICO
-            self.dia2 = semana["seg"] * ESCALA_GRAFICO
-            self.dia3 = semana["ter"] * ESCALA_GRAFICO
-            self.dia4 = semana["qua"] * ESCALA_GRAFICO
-            self.dia5 = semana["qui"] * ESCALA_GRAFICO
-            self.dia6 = semana["sex"] * ESCALA_GRAFICO
-            self.dia7 = semana["sab"] * ESCALA_GRAFICO
-
+                # CALIBRADORES MULTIPLICADORES DA ALTURA DA BARRA (0.0 a 1.0)
+                # Como a linha de base 0 está suspensa no KV, o valor máximo real visível é 0.8
+                VALOR_MAXIMO = 360.0
+                FATOR_ESC = 0.80
+                
+                semana = dados.get('semana')
+                if not isinstance(semana, dict):
+                    semana = {}
+                
+                self.dia1 = (float(semana.get('dom', 0)) / VALOR_MAXIMO) * FATOR_ESC
+                self.dia2 = (float(semana.get('seg', 0)) / VALOR_MAXIMO) * FATOR_ESC
+                self.dia3 = (float(semana.get('ter', 0)) / VALOR_MAXIMO) * FATOR_ESC
+                self.dia4 = (float(semana.get('qua', 0)) / VALOR_MAXIMO) * FATOR_ESC
+                self.dia5 = (float(semana.get('qui', 0)) / VALOR_MAXIMO) * FATOR_ESC
+                self.dia6 = (float(semana.get('sex', 0)) / VALOR_MAXIMO) * FATOR_ESC
+                self.dia7 = (float(semana.get('sab', 0)) / VALOR_MAXIMO) * FATOR_ESC
+                
         except Exception as e:
-            print(e)
+            print(f"Erro ao carregar dados reais da Geladeira: {e}")
 
 class Ventilador(Screen):
     pass
 
-class Home(Screen):
+class Ideias(Screen):
+    pass
 
-    porcentagem = NumericProperty(0.0)
-
-    nivel = StringProperty("Baixo")
-
-    def carregar_dados(self):
-
-        try:
-
-            ref = db.reference("/consumo/hoje")
-
-            dados = ref.get()
-
-            total = dados["total"]
-
-            self.ids.gauge_label.text = f"{total} kw/h"
-
-            # porcentagem do circulo
-            self.porcentagem = total / 300
-
-            # texto baixo/medio/alto
-            if total < 100:
-                self.nivel = "Baixo"
-
-            elif total < 200:
-                self.nivel = "Médio"
-
-            else:
-                self.nivel = "Alto"
-
-            # barras
-            self.ids.barra1.size_hint_y = dados["00h"] / 200
-            self.ids.barra2.size_hint_y = dados["04h"] / 200
-            self.ids.barra3.size_hint_y = dados["08h"] / 200
-            self.ids.barra4.size_hint_y = dados["12h"] / 200
-            self.ids.barra5.size_hint_y = dados["16h"] / 200
-            self.ids.barra6.size_hint_y = dados["20h"] / 200
-
-        except Exception as e:
-            print(e)
-
+# ============================================================
+# CLASSE PRINCIPAL DA APLICAÇÃO
+# ============================================================
 class Main(MDApp):
-
     def build(self):
-
         self.theme_cls.theme_style = "Light"
+        
+        # Carrega a árvore visual completa do arquivo .kv
+        root_widget = Builder.load_file(os.path.join(BASE_DIR, "interface.kv"))
+        
+        # Agenda o carregamento inicial seguro dos dados assim que a árvore de IDs estiver construída
+        Clock.schedule_interval(self.tentar_carregar_inicial, 0.5)
+        return root_widget
 
-        gerenciador = Gerenciador()
+    def tentar_carregar_inicial(self, dt):
+        try:
+            gerenciador = self.root.ids.screen_manager
+            home_screen = gerenciador.get_screen("home")
+            
+            # Quando a árvore gráfica estiver linkada, dispara as requisições de dados
+            if 'gauge_label' in home_screen.ids:
+                home_screen.carregar_dados()
+                gerenciador.get_screen("aparelhos").carregar_dados()
+                gerenciador.get_screen("geladeira").carregar_dados()
+                return False  # Cancela o intervalo do relógio com sucesso
+        except Exception:
+            pass
+        return True
 
-        Clock.schedule_once(
-            lambda dt: gerenciador.get_screen("home").carregar_dados(),
-            1
-        )
-        Clock.schedule_once(
-            lambda dt: gerenciador.get_screen("aparelhos").carregar_dados(),
-            1
-        )
-        Clock.schedule_once(
-            lambda dt: gerenciador.get_screen("geladeira").carregar_dados(),
-            1
-        )
-
-        return gerenciador
-
-
-Main().run()
+if __name__ == "__main__":
+    Main().run()
