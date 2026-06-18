@@ -15,8 +15,8 @@ TelaPrincipal:
     MDBoxLayout:
         size_hint_y: None
         height: dp(65)
-        spacing: dp(45)
-        padding: [dp(20), 0]
+        spacing: dp(35)
+        padding: [dp(20), dp(20)]
         md_bg_color: 0.97, 0.97, 0.97, 1
 
         Widget:
@@ -24,30 +24,32 @@ TelaPrincipal:
         MDIconButton:
             icon: "Images/homepress.png" if screen_manager.current == "home" else "Images/home.png"
             border: 0, 0, 0, 0
-            theme_icon_color: "Custom"
+            ripple_behavior: False
             icon_size: dp(40)
+            theme_icon_color: "Custom"
             pos_hint: {"center_y": .5}
             on_release:
                 screen_manager.transition.direction = "right"
                 screen_manager.current = "home"
 
         MDIconButton:
-            icon: "lightbulb" if screen_manager.current == "ideias" else "lightbulb-outline"
+            icon: "Images/dicapress.png" if screen_manager.current == "ideias" else "Images/dica.png"
+            border: 0, 0, 0, 0
+            ripple_behavior: False
+            icon_size: dp(40)
             theme_icon_color: "Custom"
-            icon_color: (0.1, 0.5, 0.2, 1) if screen_manager.current == "ideias" else (0.6, 0.6, 0.6, 1)
             pos_hint: {"center_y": .5}
             on_release:
                 screen_manager.transition.direction = "left" if screen_manager.current == "home" else "right"
                 screen_manager.current = "ideias"
 
         MDIconButton:
-            icon: "account" if screen_manager.current == "historico" else "account-outline"
+            icon: "Images/perfil.png"
             theme_icon_color: "Custom"
-            icon_color: (0.1, 0.5, 0.2, 1) if screen_manager.current == "historico" else (0.6, 0.6, 0.6, 1)
+            border: 0, 0, 0, 0
+            ripple_behavior: False
+            icon_size: dp(40)
             pos_hint: {"center_y": .5}
-            on_release:
-                screen_manager.transition.direction = "left"
-                screen_manager.current = "historico"
 
         Widget:
 
@@ -158,17 +160,14 @@ TelaPrincipal:
                     background_normal: "images/comunidade.png"
                     background_down: "images/comunidade.png"
                     border: 0, 0, 0, 0
-                    on_release:
-                        app.root.ids.screen_manager.current = "historico"
-                        app.root.ids.screen_manager.transition.direction = "left"
 
         # SEÇÃO 3: HOJE (GRÁFICOS)
         MDBoxLayout:
             orientation: "vertical"
             size_hint_y: None
             height: dp(230)
-            padding: [dp(22), dp(10), dp(22), dp(5)]
-            spacing: dp(10)
+            padding: [dp(22), dp(10), dp(10), dp(10)]
+            spacing: dp(5)
 
             MDLabel:
                 size_hint_y: None
@@ -188,14 +187,13 @@ TelaPrincipal:
                     height: dp(170)
                     pos_hint: {"center_x": .5, "top": 1}
                     radius: [dp(20)]
-                    padding: dp(15)
-                    spacing: dp(15)
+                    spacing: dp(10)
                     md_bg_color: 0.97, 0.97, 0.97, 1
 
                     # Lado Esquerdo: Gauge
                     MDBoxLayout:
                         orientation: "vertical"
-                        size_hint_x: 0.4
+                        size_hint_x: 0.35
 
                         MDLabel:
                             text: root.nivel
@@ -233,26 +231,18 @@ TelaPrincipal:
                                 font_size: dp(13)
                         Widget:
 
-                    MDLabel:
-                        text: "kw / hora"
-                        bold: True
-                        font_size: dp(15)
-                        padding: [dp(15), dp(10), 0, 0]
-                        color: 0.2, 0.05, 0.18, 1
-                        size_hint_y: None
-                        height: dp(30)
-
+                    #LADO DIREITO: GRAFICOS
                     MDBoxLayout:
                         size_hint_y: None
+                        size_hint_x: 0.65
                         height: dp(180)
-                        spacing: dp(8)
-                        padding: [dp(12), 0, dp(12), 0]
+                        spacing: dp(10)
 
-                        # EIXO Y COM OS VALORES DO LADO (Ajustados para a escala horária de 200)
+                        # EIXO Y COM OS VALORES
                         MDBoxLayout:
                             orientation: "vertical"
                             size_hint_x: None
-                            width: dp(35)
+                            width: dp(20)
                             padding: [0, dp(18), 0, dp(15)]
 
                             MDLabel:
@@ -273,7 +263,7 @@ TelaPrincipal:
                                 halign: "right"
                                 color: 0.6, 0.6, 0.6, 1
 
-                        # CHÃO MATEMÁTICO RÍGIDO (Gráfico de Barras)
+                        # CHÃO MATEMÁTICO
                         MDRelativeLayout:
                             canvas.before:
                                 Color:
@@ -298,7 +288,7 @@ TelaPrincipal:
 
                             MDBoxLayout:
                                 orientation: "horizontal"
-                                spacing: dp(12)
+                                spacing: dp(5)
                                 size_hint: 1, 1
                                 pos_hint: {"x": 0, "y": 0}
 
@@ -309,8 +299,8 @@ TelaPrincipal:
                                         Widget:
                                             id: barra_00h
                                             size_hint: (None, None)
-                                            width: dp(16)
-                                            pos_hint: {"center_x": .5, "y": 0.115}
+                                            width: dp(20)
+                                            pos_hint: {"center_x": .5, "y": 0.005}
                                             canvas.before:
                                                 Color:
                                                     rgba: (0.5, 0.75, 0.68, 1) if self.size_hint_y and self.size_hint_y > 0 else (0.93, 0.93, 0.93, 1)
@@ -334,7 +324,7 @@ TelaPrincipal:
                                             id: barra_04h
                                             size_hint: (None, None)
                                             width: dp(16)
-                                            pos_hint: {"center_x": .5, "y": 0.115}
+                                            pos_hint: {"center_x": .5, "y": 0.005}
                                             canvas.before:
                                                 Color:
                                                     rgba: (0.5, 0.75, 0.68, 1) if self.size_hint_y and self.size_hint_y > 0 else (0.93, 0.93, 0.93, 1)
@@ -358,7 +348,7 @@ TelaPrincipal:
                                             id: barra_08h
                                             size_hint: (None, None)
                                             width: dp(16)
-                                            pos_hint: {"center_x": .5, "y": 0.115}
+                                            pos_hint: {"center_x": .5, "y": 0.005}
                                             canvas.before:
                                                 Color:
                                                     rgba: (0.5, 0.75, 0.68, 1) if self.size_hint_y and self.size_hint_y > 0 else (0.93, 0.93, 0.93, 1)
@@ -382,7 +372,7 @@ TelaPrincipal:
                                             id: barra_12h
                                             size_hint: (None, None)
                                             width: dp(16)
-                                            pos_hint: {"center_x": .5, "y": 0.115}
+                                            pos_hint: {"center_x": .5, "y": 0.005}
                                             canvas.before:
                                                 Color:
                                                     rgba: (0.5, 0.75, 0.68, 1) if self.size_hint_y and self.size_hint_y > 0 else (0.93, 0.93, 0.93, 1)
@@ -406,7 +396,7 @@ TelaPrincipal:
                                             id: barra_16h
                                             size_hint: (None, None)
                                             width: dp(16)
-                                            pos_hint: {"center_x": .5, "y": 0.115}
+                                            pos_hint: {"center_x": .5, "y": 0.005}
                                             canvas.before:
                                                 Color:
                                                     rgba: (0.5, 0.75, 0.68, 1) if self.size_hint_y and self.size_hint_y > 0 else (0.93, 0.93, 0.93, 1)
@@ -430,7 +420,7 @@ TelaPrincipal:
                                             id: barra_20h
                                             size_hint: (None, None)
                                             width: dp(16)
-                                            pos_hint: {"center_x": .5, "y": 0.115}
+                                            pos_hint: {"center_x": .5, "y": 0.005}
                                             canvas.before:
                                                 Color:
                                                     rgba: (0.5, 0.75, 0.68, 1) if self.size_hint_y and self.size_hint_y > 0 else (0.93, 0.93, 0.93, 1)
@@ -456,25 +446,17 @@ TelaPrincipal:
 
     MDBoxLayout:
         orientation: "vertical"
-        padding: [20,20,20,20]
-        spacing: 20
-
-        canvas.before:
-            Color:
-                rgba: 1,1,1,1
-
-            Rectangle:
-                pos: self.pos
-                size: self.size
+        padding: [10,10,10,10]
+        spacing: 10
 
         MDBoxLayout:
             size_hint_y: None
-            height: 40
-            spacing: 10
+            height: dp(50)
+            spacing: dp(10)
 
             MDIconButton:
                 icon: "arrow-left"
-
+                ripple_behavior: False
                 theme_icon_color: "Custom"
                 icon_color: 0.2,0.05,0.18,1
 
@@ -484,16 +466,14 @@ TelaPrincipal:
 
             MDLabel:
                 text: "Histórico"
-
                 bold: True
-                font_size: 24
-
+                font_size: "24sp"
                 color: 0.2,0.05,0.18,1
 
         MDBoxLayout:
             spacing: 15
             size_hint_y: None
-            height: 40
+            height: dp(30)
 
             MDFlatButton:
                 text: "Diário"
@@ -536,43 +516,55 @@ TelaPrincipal:
 
         Widget:
             size_hint_y: None
-            height: 10
+            height: 5
 
-        MDCard:
-            id: botao_data
+        MDBoxLayout:
+            id: seletor
+            size_hint_y: None
+            height: dp(50)
+            padding: [dp(20), 0]
+            spacing: dp(5)
+            
+            # Centraliza o seletor na tela
+            Widget:
 
-            size_hint: None, None
-            size: 110, 40
+            MDIconButton:
+                icon: "chevron-left"
+                ripple_behavior: False
+                on_release: root.navegar_data(-1)
+                pos_hint: {"center_y": .5}
 
-            pos_hint: {"center_x": .5}
+            MDCard:
+                id: fundo_data
+                size_hint: None, None
+                size: dp(140), dp(40)
+                radius: [20]
+                md_bg_color: 0.8, 0.9, 0.8, 1
+                elevation: 0
+                pos_hint: {"center_y": .5}
+                on_release: root.acao_seletor()
+                
+                MDLabel:
+                    text: root.dia_texto if root.modo == "diario" else (root.mes_texto if root.modo == "mensal" else root.ano_texto)
+                    halign: "center"
+                    valign: "center"
+                    bold: True
+                    theme_text_color: "Custom"
+                    text_color: 0.2, 0.4, 0.3, 1 # Verde escuro
 
-            radius: [16]
-
-            elevation: 0
-
-            ripple_behavior: False
-
-            md_bg_color: 0.87,0.95,0.9,1
-
-            on_release:
-                root.abrir_menu_data(botao_data)
-
-            MDLabel:
-                text:
-                    root.dia_texto if root.modo == "diario" else root.mes_texto if root.modo == "mensal" else root.ano_texto
-
-                halign: "center"
-
-                bold: True
-
-                color: 0.5,0.7,0.6,1
+            MDIconButton:
+                icon: "chevron-right"
+                ripple_behavior: False
+                on_release: root.navegar_data(1)
+                pos_hint: {"center_y": .5}
+                
+            Widget:
 
         FloatLayout:
             size_hint_y: None
-            height: 250
+            height: 300
 
             canvas:
-
                 Color:
                     rgba: 0.85,0.9,0.88,1
 
@@ -599,42 +591,22 @@ TelaPrincipal:
 
             MDLabel:
                 text: str(root.consumo)
-
                 font_size: 42
                 bold: True
-
                 halign: "center"
-
                 color: 0.2,0.05,0.18,1
-
                 pos_hint: {"center_x": .5, "center_y": .48}
 
             MDLabel:
                 text: root.unidade
-
                 font_size: 20
-
                 halign: "center"
-
                 color: 0.7,0.7,0.7,1
-
                 pos_hint: {"center_x": .5, "center_y": .32}
-
-        MDLabel:
-            text:
-                "" if root.modo == "diario" else "Semana 1" if root.modo == "mensal" else ""
-
-            halign: "center"
-
-            bold: True
-
-            font_size: 24
-
-            color: 0.2,0.05,0.18,1
 
         MDBoxLayout:
             size_hint_y: None
-            height: 220
+            height: dp(150)
             spacing: 8
             pos_hint: {"x": -0.05}
 
@@ -662,20 +634,43 @@ TelaPrincipal:
                     font_size: 11
                     halign: "right"
 
-            FloatLayout:
+            MDRelativeLayout:
 
                 canvas.before:
+
+                    # linha superior
                     Color:
-                        rgba: 0.85,0.85,0.85,1
+                        rgba: 0.9,0.9,0.9,0.6
 
                     Line:
-                        points: [self.x, self.center_y, self.right, self.center_y]
+                        points: [ 0, self.height - dp(25), self.width, self.height - dp(25) ]
+                        width: 1
+                        dash_length: dp(3)
+                        dash_offset: dp(3)
+
+
+                    # linha do meio
+                    Color:
+                        rgba: 0.88,0.88,0.88,1
+
+                    Line:
+                        points: [ 0, self.center_y, self.width, self.center_y ]
                         width: 1
 
+
+                    # chão
+                    Color:
+                        rgba: 0.35,0.35,0.35,1
+
+                    Line:
+                        points: [ 0, dp(20), self.width, dp(20) ]
+                        width: 1.5
+
                 MDBoxLayout:
-                    pos_hint: {"center_x": .5, "center_y": .48}
+                    id: container_barras
+                    pos_hint: {"center_x": .5, "center_y": .33}
                     spacing: 6
-                    size_hint: 1, 1
+                    size_hint_y: None
 
                     MDBoxLayout:
                         orientation: "vertical"
@@ -683,9 +678,23 @@ TelaPrincipal:
                         Widget:
 
                         Widget:
+
                             size_hint: None, None
-                            width: 18
+                            width: dp(18)
                             height: root.barra1
+
+                            pos_hint:
+                                {"center_x": .5, "y": 0.11}
+
+                            canvas.before:
+
+                                Color:
+                                    rgba: 0.5,0.75,0.68,1
+
+                                RoundedRectangle:
+                                    pos: self.pos
+                                    size: self.size
+                                    radius: [dp(5)]
 
                             canvas.before:
                                 Color:
@@ -1030,6 +1039,7 @@ TelaPrincipal:
                 icon: "arrow-left"
                 theme_icon_color: "Custom"
                 icon_color: 0.2, 0.05, 0.18, 1
+                ripple_behavior: False
 
                 on_release:
                     app.root.ids.screen_manager.current = "home"
@@ -1064,7 +1074,7 @@ TelaPrincipal:
             MDCard:
                 orientation: "vertical"
                 radius: [22]
-                ripple_behavior: True
+                ripple_behavior: False
                 padding: 0
                 size_hint_y: None
                 height: 170
@@ -1161,6 +1171,7 @@ TelaPrincipal:
                 ripple_behavior: True
                 size_hint_y: None
                 height: 170
+                ripple_behavior: False
 
                 md_bg_color: 0.97,0.97,0.97,1
 
@@ -1268,6 +1279,7 @@ TelaPrincipal:
         MDFloatingActionButton:
             elevation: 0
             icon: "plus"
+            ripple_behavior: False
             pos_hint: {"center_x": .88}
             md_bg_color: 0.9,0.8,0.95,1
             icon_color: 0.3,0.1,0.3,1
@@ -1292,9 +1304,10 @@ TelaPrincipal:
                 icon: "arrow-left"
                 theme_icon_color: "Custom"
                 icon_color: 0.2, 0.05, 0.18, 1
+                ripple_behavior: False
 
                 on_release:
-                    app.root.ids.screen_manager.current = "home"
+                    app.root.ids.screen_manager.current = "aparelhos"
                     app.root.ids.screen_manager.transition.direction = "right"
 
             MDLabel:
@@ -1612,6 +1625,7 @@ TelaPrincipal:
 
     MDIconButton:
         icon: "arrow-left"
+        ripple_behavior: False
 
         on_release:
             app.root.ids.screen_manager.current = "aparelhos"

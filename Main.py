@@ -11,6 +11,8 @@ from kivy.clock import Clock
 from kivy.properties import NumericProperty, StringProperty
 from datetime import datetime
 from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.menu import MDDropdownMenu
+from kivymd.uix.pickers import MDDatePicker
 import firebase_admin
 from firebase_admin import credentials, db
 import os
@@ -25,7 +27,6 @@ ESCALA_GRAFICO = 160 / 300
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 firebase_path = os.path.join(BASE_DIR, "firebase_key.json")
 
-# Inicialização segura do Firebase
 if not firebase_admin._apps:
     cred = credentials.Certificate(firebase_path)
     firebase_admin.initialize_app(cred, {
@@ -38,9 +39,11 @@ class TelaPrincipal(MDBoxLayout):
 class Gerenciador(ScreenManager):
     pass
 
-# ============================================================
-# CLASSES DAS TELAS RECALIBRADAS COM AS PROPRIEDADES ANTIGAS
-# ============================================================
+class Ventilador(Screen):
+    pass
+
+class Ideias(Screen):
+    pass
 
 class Home(Screen):
     porcentagem = NumericProperty(0)
@@ -65,7 +68,6 @@ class Home(Screen):
             else:
                 self.nivel = "Alto"
 
-            # Atualização segura das barras gráficas
             barras_horarios = ["barra_00h", "barra_04h", "barra_08h", "barra_12h", "barra_16h", "barra_20h"]
             chaves_firebase = ["00h", "04h", "08h", "12h", "16h", "20h"]
             for id_barra, chave in zip(barras_horarios, chaves_firebase):
@@ -83,6 +85,7 @@ class Historico(Screen):
     dia_texto = StringProperty("")
     mes_texto = StringProperty("")
     ano_texto = StringProperty("")
+    valor_maximo_possivel = 350
 
     unidade = StringProperty("kw / dia")
 
@@ -116,44 +119,23 @@ class Historico(Screen):
 
         self.carregar_diario()
 
-    # -------------------------
-    # TEXTOS
-    # -------------------------
-
     def atualizar_textos(self):
 
         self.dia_texto = f"{self.dia} {MESES[self.mes - 1]}"
         self.mes_texto = MESES[self.mes - 1]
         self.ano_texto = str(self.ano)
 
-    # -------------------------
-    # GRAFICO
-    # -------------------------
-
     def definir_barras(self, valores):
 
-        # completa até 12 barras
-        while len(valores) < 12:
-            valores.append(0)
+        valores = valores + [0] * (12 - len(valores))
 
-        barras = [v * ESCALA_GRAFICO for v in valores]
+        for i, valor in enumerate(valores[:12], start=1):
 
-        self.barra1 = barras[0]
-        self.barra2 = barras[1]
-        self.barra3 = barras[2]
-        self.barra4 = barras[3]
-        self.barra5 = barras[4]
-        self.barra6 = barras[5]
-        self.barra7 = barras[6]
-        self.barra8 = barras[7]
-        self.barra9 = barras[8]
-        self.barra10 = barras[9]
-        self.barra11 = barras[10]
-        self.barra12 = barras[11]
-
-    # -------------------------
-    # MODOS
-    # -------------------------
+            setattr(
+                self,
+                f"barra{i}",
+                valor * ESCALA_GRAFICO
+            )
 
     def carregar_diario(self):
 
@@ -171,7 +153,6 @@ class Historico(Screen):
 
             self.porcentagem = min(self.consumo / 500, 1)
 
-            # HORÁRIOS (MESMOS DO HOME)
             valores = [
                 dados["00h"],
                 dados["04h"],
@@ -185,7 +166,7 @@ class Historico(Screen):
             self.definir_barras(valores)
 
         except Exception as e:
-            print(e)
+            print(f"Erro no Historico - consumo hoje ao carregar Firebase: {e}")
 
         self.atualizar_textos()
 
@@ -227,24 +208,55 @@ class Historico(Screen):
 
         self.atualizar_textos()
 
-    # -------------------------
-    # MENUS
-    # -------------------------
+    def abrir_datepicker(self):
+        date_dialog = MDDatePicker(
+            title="ESCOLHA A DATA",
+            primary_color=(0.5, 0.7, 0.6, 1),
+            selector_color=(0.5, 0.7, 0.6, 1),
+        )
+        date_dialog.bind(on_save=self.on_date_save)
+        date_dialog.open()
+
+    def on_date_save(self, instance, value, date_range):
+        self.dia = value.day
+        self.mes = value.month
+        self.ano = value.year
+        self.atualizar_textos()
+        print(f"Data selecionada: {self.dia}/{self.mes}/{self.ano}")
+
+    def acao_seletor(self):
+        if self.modo == "diario":
+            self.abrir_datepicker()
+        else:
+            self.abrir_menu_data(self.ids.fundo_data)
+
+    def navegar_data(self, direcao):
+        from datetime import date, timedelta
+        
+        if self.modo == "diario":
+            data_atual = date(self.ano, self.mes, self.dia)
+            nova_data = data_atual + timedelta(days=direcao)
+            self.dia, self.mes, self.ano = nova_data.day, nova_data.month, nova_data.year
+            
+        elif self.modo == "mensal":
+
+            novo_mes = self.mes + direcao
+            if novo_mes > 12: self.mes = 1; self.ano += 1
+            elif novo_mes < 1: self.mes = 12; self.ano -= 1
+            else: self.mes = novo_mes
+            self.carregar_mensal()
+            
+        elif self.modo == "anual":
+            self.ano += direcao
+            self.carregar_anual()
+            
+        self.atualizar_textos()
 
     def abrir_menu_data(self, botao):
 
         itens = []
 
-        if self.modo == "diario":
-
-            for i in range(1, 32):
-
-                itens.append({
-                    "text": str(i),
-                    "on_release": lambda x=i: self.selecionar_dia(x)
-                })
-
-        elif self.modo == "mensal":
+        if self.modo == "mensal":
 
             for i, mes in enumerate(MESES):
 
@@ -253,7 +265,7 @@ class Historico(Screen):
                     "on_release": lambda x=i + 1: self.selecionar_mes(x)
                 })
 
-        else:
+        elif self.modo == "anual":
 
             for ano in range(2026, 1899, -1):
 
@@ -269,10 +281,6 @@ class Historico(Screen):
         )
 
         self.menu.open()
-
-    # -------------------------
-    # SELEÇÃO
-    # -------------------------
 
     def selecionar_dia(self, dia):
 
@@ -328,7 +336,7 @@ class Aparelhos(Screen):
             self.porcentagem_ventilador = ventilador["watts"] / 200
 
         except Exception as e:
-            print(e)
+            print(f"Erro em Aparelhos ao carregar status no Firebase: {e}")
 
 class Geladeira(Screen):
     porcentagem = NumericProperty(0)
@@ -352,18 +360,16 @@ class Geladeira(Screen):
             dados = ref.get()
             
             if dados:
-                # Carrega o consumo de kW/dia
+
                 consumo = dados.get('kw_dia', 0)
                 self.kw_dia = str(consumo)
                 
-                # Sincroniza o gráfico em pizza/arco central (0.0 a 1.0)
+                # GRAFICO EM PIZZA
                 self.porcentagem = min(1.0, float(consumo) / 300.0) if consumo else 0.0
                 
                 if 'data' in dados:
                     self.data_atual = dados.get('data')
 
-                # CALIBRADORES MULTIPLICADORES DA ALTURA DA BARRA (0.0 a 1.0)
-                # Como a linha de base 0 está suspensa no KV, o valor máximo real visível é 0.8
                 VALOR_MAXIMO = 360.0
                 FATOR_ESC = 0.80
                 
@@ -382,23 +388,12 @@ class Geladeira(Screen):
         except Exception as e:
             print(f"Erro ao carregar dados reais da Geladeira: {e}")
 
-class Ventilador(Screen):
-    pass
-
-class Ideias(Screen):
-    pass
-
-# ============================================================
-# CLASSE PRINCIPAL DA APLICAÇÃO
-# ============================================================
 class Main(MDApp):
     def build(self):
         self.theme_cls.theme_style = "Light"
         
-        # Carrega a árvore visual completa do arquivo .kv
         root_widget = Builder.load_file(os.path.join(BASE_DIR, "interface.kv"))
         
-        # Agenda o carregamento inicial seguro dos dados assim que a árvore de IDs estiver construída
         Clock.schedule_interval(self.tentar_carregar_inicial, 0.5)
         return root_widget
 
@@ -407,14 +402,13 @@ class Main(MDApp):
             gerenciador = self.root.ids.screen_manager
             home_screen = gerenciador.get_screen("home")
             
-            # Quando a árvore gráfica estiver linkada, dispara as requisições de dados
             if 'gauge_label' in home_screen.ids:
                 home_screen.carregar_dados()
                 gerenciador.get_screen("aparelhos").carregar_dados()
                 gerenciador.get_screen("geladeira").carregar_dados()
-                return False  # Cancela o intervalo do relógio com sucesso
-        except Exception:
-            pass
+                return False
+        except Exception as e:
+            print(f"Erro na Home ao carregar dados do Firebase: {e}")
         return True
 
 if __name__ == "__main__":
